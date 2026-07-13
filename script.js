@@ -1,3 +1,5 @@
+import { renderApp } from './render.js';
+
 const SUPABASE_URL = 'https://jkiazexsupbxfxvoznux.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_OclYp28IKB6mbCipVRrlaA_87HAAzix'; // atau anon key kalau pake legacy
 
