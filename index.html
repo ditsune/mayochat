@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Take Order</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="./style.css" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="./foto/sticker.png" type="image/png">
+    <link rel="shortcut icon" href="./foto/sticker.png" type="image/png">
+    <link rel="apple-touch-icon" href="./foto/sticker.png">
+</head>
+
+<body>
+    <!-- Main App - dirender oleh render.js -->
+    <div id="app"></div>
+
+    <!-- Toast Notification (di luar app biar selalu di atas) -->
+    <div id="toast" class="toast"></div>
+
+    <!-- FABs (di luar app) -->
+    <button class="fab fab-tools" id="scrollToToolsFab" title="Tools">
+        <i class="fas fa-tools"></i>
+    </button>
+    <button class="fab fab-reseller" id="scrollToResellerFab" title="Reseller">
+        <i class="fas fa-users"></i>
+    </button>
+    <button class="fab fab-home" id="scrollToTopFab" title="Home">
+        <i class="fas fa-home"></i>
+    </button>
+
+    <!-- Address Modal (di luar app) -->
+    <div class="inv-modal-overlay" id="addressModalOverlay">
+        <div class="inv-modal-box">
+            <div class="inv-modal-header">
+                <h3><i class="fas fa-map-marker-alt"></i> Alamat Bill Gates</h3>
+                <button class="inv-modal-close" id="addressModalCloseBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="addressKeyScreen">
+                <div class="inv-form-group">
+                    <label>Secret Key</label>
+                    <div class="password-container">
+                        <input class="inv-form-control" id="addressKeyInput" type="password"
+                            placeholder="Masukkan secret key…">
+                        <button class="toggle-password" id="addressToggleBtn" type="button">
+                            <span class="toggle-icon">👁️</span>
+                        </button>
+                    </div>
+                    <div id="addressKeyError" class="addr-key-error"></div>
+                </div>
+                <button class="inv-btn inv-btn-pink" id="addressUnlockBtn" style="width:100%;justify-content:center;">
+                    <i class="fas fa-unlock"></i> Unlock
+                </button>
+            </div>
+            <div id="addressContent" style="display:none;">
+                <div class="addr-row">
+                    <div class="inv-form-group">
+                        <label>Street</label>
+                        <div class="addr-copy-box" id="addrStreet">
+                            <span>475 S Imperial Ave</span>
+                            <i class="fas fa-copy addr-copy-icon"></i>
+                        </div>
+                    </div>
+                    <div class="inv-form-group">
+                        <label>City</label>
+                        <div class="addr-copy-box" id="addrCity">
+                            <span>Burns</span>
+                            <i class="fas fa-copy addr-copy-icon"></i>
+                        </div>
+                    </div>
+                    <div class="inv-form-group">
+                        <label>State</label>
+                        <div class="addr-copy-box" id="addrState">
+                            <span>Oregon</span>
+                            <i class="fas fa-copy addr-copy-icon"></i>
+                        </div>
+                    </div>
+                    <div class="inv-form-group">
+                        <label>ZIP Code</label>
+                        <div class="addr-copy-box" id="addrZip">
+                            <span>97720-2349</span>
+                            <i class="fas fa-copy addr-copy-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="inv-hint" style="margin-top:0.5rem;">
+                    <i class="fas fa-info-circle"></i> Klik field untuk copy ke clipboard
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Script -->
+    <script type="module" src="./script.js"></script>
+</body>
+
+</html>

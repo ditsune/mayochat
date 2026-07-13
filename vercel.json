@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/user-lookup", "destination": "/api" },
+    { "source": "/avatar/(.*)", "destination": "/api" }
+  ]
+}
