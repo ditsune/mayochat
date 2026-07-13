@@ -672,10 +672,6 @@ function inv4ShowAvatarErr(msg) {
     inv4SetStatus('inv4StatusUser', 'err', msg || 'tidak ditemukan');
 }
 
-// ==================== WARMUP ====================
-function warmUpWorker() { fetch(ROBLOX_PROXY_URL).catch(() => {}); }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') warmUpWorker(); });
-
 // ==================== RESELLER DATA ====================
 const nominalData = [
     { amount:"80robux",price:"Rp 14.700" },{ amount:"80robux 2",price:"Rp 29.400" },{ amount:"80robux 3",price:"Rp 44.100" },{ amount:"80robux 4",price:"Rp 58.800" },
@@ -733,7 +729,6 @@ document.addEventListener('DOMContentLoaded', function () {
     updateStats();
     initializeScrollButtons();
     initializeBackupFormatter();
-    warmUpWorker();
 
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
     document.getElementById('showStats').addEventListener('click', showStats);

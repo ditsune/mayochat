@@ -2,15 +2,60 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
-app.use(cors({ origin: '*' }));
-app.use(express.json());
 
+// ==================== ENV CHECK ====================
 const ROBLOX_COOKIE = process.env.ROBLOX_COOKIE || '';
 
-console.log('🔐 Cookie loaded:', ROBLOX_COOKIE ? 'YES (length: ' + ROBLOX_COOKIE.length + ')' : 'NO');
+if (!ROBLOX_COOKIE) {
+  console.warn('⚠️  WARNING: ROBLOX_COOKIE tidak di-set! Set di Vercel → Settings → Environment Variables, lalu redeploy.');
+} else {
+  console.log('🔐 Cookie loaded: YES (length: ' + ROBLOX_COOKIE.length + ')');
+}
 
+const SERVER_STARTED_AT = Date.now();
+const APP_VERSION = '1.1.0';
+
+// ==================== MIDDLEWARE ====================
+app.use(cors({ origin: ['https://mayochatnew.vercel.app'] })); // ganti sesuai domain lu
+app.use(express.json());
+
+// Rate limiter khusus buat /user-lookup — 20 request per menit per IP
+const lookupLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 menit
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, found: false, error: 'Terlalu banyak request, coba lagi sebentar.' }
+});
+
+// ==================== SIMPLE IN-MEMORY CACHE ====================
+// Cache lookup selama 45 detik biar gak double-hit Roblox API
+const lookupCache = new Map();
+const CACHE_TTL_MS = 45 * 1000;
+
+function getCached(key) {
+  const entry = lookupCache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+    lookupCache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+function setCached(key, data) {
+  lookupCache.set(key, { data, timestamp: Date.now() });
+  // Bersihin cache lama biar gak numpuk terus di memory
+  if (lookupCache.size > 200) {
+    const oldestKey = lookupCache.keys().next().value;
+    lookupCache.delete(oldestKey);
+  }
+}
+
+// ==================== FETCH HELPER ====================
 async function fetchRoblox(url, options = {}) {
   const headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -29,7 +74,7 @@ async function fetchRoblox(url, options = {}) {
   });
 
   if (res.status === 429) {
-    console.log('⚠️ Rate limited, waiting...');
+    console.log('⚠️ Rate limited by Roblox, waiting...');
     await new Promise(r => setTimeout(r, 2000));
     return fetchRoblox(url, options);
   }
@@ -37,18 +82,35 @@ async function fetchRoblox(url, options = {}) {
   return res;
 }
 
+// ==================== HEALTH CHECK ====================
 app.get('/', (req, res) => {
-  res.json({ status: 'ok', cookieLoaded: !!ROBLOX_COOKIE });
+  const uptimeSeconds = Math.floor((Date.now() - SERVER_STARTED_AT) / 1000);
+  res.json({
+    status: 'ok',
+    version: APP_VERSION,
+    cookieLoaded: !!ROBLOX_COOKIE,
+    uptimeSeconds,
+    cacheSize: lookupCache.size,
+    timestamp: new Date().toISOString()
+  });
 });
 
-app.post('/user-lookup', async (req, res) => {
+// ==================== USER LOOKUP ====================
+app.post('/user-lookup', lookupLimiter, async (req, res) => {
   try {
     const { username } = req.body;
     if (!username || username.trim().length < 3) {
       return res.json({ success: false, error: 'Min 3 karakter', found: false });
     }
-    const clean = username.trim();
+    const clean = username.trim().toLowerCase();
     console.log('🔍 Looking up:', clean);
+
+    // Cek cache dulu sebelum hit Roblox API
+    const cached = getCached(clean);
+    if (cached) {
+      console.log('⚡ Cache hit:', clean);
+      return res.json(cached);
+    }
 
     const resolveRes = await fetchRoblox('https://users.roblox.com/v1/usernames/users', {
       method: 'POST',
@@ -58,7 +120,9 @@ app.post('/user-lookup', async (req, res) => {
     const resolveData = await resolveRes.json();
 
     if (!resolveData.data || resolveData.data.length === 0) {
-      return res.json({ success: false, found: false, error: 'Tidak ditemukan' });
+      const notFoundResult = { success: false, found: false, error: 'Tidak ditemukan' };
+      setCached(clean, notFoundResult);
+      return res.json(notFoundResult);
     }
 
     const user = resolveData.data[0];
@@ -94,7 +158,7 @@ app.post('/user-lookup', async (req, res) => {
 
     console.log('🖼️ Avatar:', avatarUrl ? 'OK' : 'NULL', '| 👑 Premium:', isPremium);
 
-    res.json({
+    const result = {
       success: true,
       found: true,
       id: userId,
@@ -103,7 +167,10 @@ app.post('/user-lookup', async (req, res) => {
       avatarUrl: avatarUrl,
       isPremium: isPremium,
       hasVerifiedBadge: userDetail.hasVerifiedBadge || false
-    });
+    };
+
+    setCached(clean, result);
+    res.json(result);
 
   } catch (err) {
     console.error('❌ Error:', err.message);
@@ -111,6 +178,7 @@ app.post('/user-lookup', async (req, res) => {
   }
 });
 
+// ==================== AVATAR PROXY ====================
 app.get('/avatar/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
@@ -134,5 +202,4 @@ app.get('/avatar/:userId', async (req, res) => {
   }
 });
 
-// PENTING: tanpa app.listen(), langsung export
 module.exports = app;

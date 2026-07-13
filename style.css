@@ -894,13 +894,13 @@ body:not(.dark) .template-card[data-category="other"] .tc-category-badge {
     letter-spacing: -0.01em;
 }
 
-/* Preview text */
 .tc-preview {
     font-size: 0.775rem;
     color: var(--muted);
     line-height: 1.55;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     white-space: pre-line;
