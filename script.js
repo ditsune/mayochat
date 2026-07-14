@@ -723,7 +723,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     updateStats();
     initializeScrollButtons();
     initializeBackupFormatter();
-    warmUpWorker();
 
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
     document.getElementById('showStats').addEventListener('click', showStats);
