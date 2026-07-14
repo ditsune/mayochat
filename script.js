@@ -99,7 +99,8 @@ function handleQuickAction(type) {
         'qr':8, 'queue':20, 'prem':10, 'thanks':14, 'weborder':15,
         'fix':25, 'wrongpw':6, 'estimation':9, 'checklogin':2,
         'checkemail':3, 'reset':11, 'webproblem':21, 'regencode':22,
-        'gp':16, 'gkmsk':5, 'gabisa':52, 'cs':29
+        'gp':16, 'gkmsk':5, 'gabisa':52, 'cs':29,
+        'howinvalid':87, 'how2step':88
     };
     if (map[type]) copyTemplate(map[type]);
 }

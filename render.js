@@ -81,6 +81,8 @@ export function renderApp() {
                 <button class="quick-btn" data-template="queue"><i class="fas fa-user-slash"></i><span>Acc Only</span></button>
                 <button class="quick-btn" data-template="fix"><i class="fas fa-fingerprint"></i><span>Passkey Aktif</span></button>
                 <button class="quick-btn" data-template="qr"><i class="fas fa-shield-virus"></i><span>Hardware Passkey</span></button>
+                <button class="quick-btn" data-template="howinvalid"><i class="fas fa-key"></i><span>How Invalid</span></button>
+                <button class="quick-btn" data-template="how2step"><i class="fas fa-toggle-off"></i><span>How 2step</span></button>
             </div>
         </div>
 
