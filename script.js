@@ -127,7 +127,7 @@ function handleCopySuccess(id, name) {
         setTimeout(() => card.classList.remove('copied'), 1200);
     }
     updateStats();
-    showToast(`✅ "${name}" dicopy! 📋`);
+    showToast(`"${name}" dicopy!`);
 }
 
 function fallbackCopy(text, id, name) {
