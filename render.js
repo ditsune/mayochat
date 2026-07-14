@@ -34,7 +34,7 @@ export function renderApp() {
         <div class="container-main">
             <div class="container-banner">
                 <div class="image-banner-hero">
-                    <img src="foto/banner2.jpeg" alt="Banner Mayoblox">
+                    <img src="foto/bocilmayo.png" alt="Banner Mayoblox">
                 </div>
                 <div class="title-banner-hero">
                     <div>
